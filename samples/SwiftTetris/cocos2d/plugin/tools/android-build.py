@@ -71,14 +71,14 @@ def do_build(plugin_root, cocos_root, ndk_root, app_android_root, ndk_build_para
     # windows should use ";" to seperate module paths
     platform = sys.platform
     if platform == 'win32':
-        ndk_module_path = 'NDK_MODULE_PATH=%s/publish;%s;%s/external;%s/cocos' % (plugin_root, cocos_root, cocos_root, cocos_root)
+        ndk_module_path = f'NDK_MODULE_PATH={plugin_root}/publish;{cocos_root};{cocos_root}/external;{cocos_root}/cocos'
     else:
-        ndk_module_path = 'NDK_MODULE_PATH=%s/publish:%s:%s/external:%s/cocos' % (plugin_root, cocos_root, cocos_root, cocos_root)
+        ndk_module_path = f'NDK_MODULE_PATH={plugin_root}/publish:{cocos_root}:{cocos_root}/external:{cocos_root}/cocos'
 
-    if ndk_build_param == None:
-        command = '%s -C %s %s' % (ndk_path, app_android_root, ndk_module_path)
+    if ndk_build_param is None:
+        command = f'{ndk_path} -C {app_android_root} {ndk_module_path}'
     else:
-        command = '%s -C %s %s %s' % (ndk_path, app_android_root, ndk_build_param, ndk_module_path)
+        command = f'{ndk_path} -C {app_android_root} {ndk_build_param} {ndk_module_path}'
     os.system(command)
 
 def copy_files(src, dst):
@@ -115,7 +115,7 @@ def copy_resources(target, app_android_root, plugin_root):
     #     copy_files(resources_dir, assets_dir)
 
     # copy plugin resources to the assets
-    plugins_dir = os.path.join(plugin_root, "publish" + os.path.sep + "plugins")
+    plugins_dir = os.path.join(plugin_root, f"publish{os.path.sep}plugins")
     for item in os.listdir(plugins_dir):
         src = os.path.join(plugins_dir, item + os.path.sep + "android" + os.path.sep + "ForAssets")
         if os.path.isdir(src):
@@ -123,7 +123,7 @@ def copy_resources(target, app_android_root, plugin_root):
 
 def copy_clibs(app_android_root, plugin_root):
     target_cpath = os.path.join(app_android_root, "libs")
-    plugins_dir = os.path.join(plugin_root, "publish" + os.path.sep + "plugins")
+    plugins_dir = os.path.join(plugin_root, f"publish{os.path.sep}plugins")
     for item in os.listdir(plugins_dir):
         src = os.path.join(plugins_dir, item + os.path.sep + "android" + os.path.sep + "CLibs")
         if os.path.isdir(src):
@@ -143,7 +143,10 @@ def build_samples(target,ndk_build_param):
 
     app_android_root = ''
     for target in build_targets:
-        app_android_root = os.path.join(plugin_root, "samples" + os.path.sep + target + os.path.sep + "proj.android")
+        app_android_root = os.path.join(
+            plugin_root,
+            f"samples{os.path.sep}{target}{os.path.sep}proj.android",
+        )
 
         copy_resources(target, app_android_root, plugin_root)
         do_build(plugin_root, cocos_root, ndk_root, app_android_root, ndk_build_param)

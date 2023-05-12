@@ -51,35 +51,27 @@ class ProjectFormat(object):
     def getConfigJson(self):
 
         cfg_json_path = os.path.join(self.file_base_path, ProjectFormat.CONFIG_FILE)
-        f = open(cfg_json_path)
-        config_json = json.load(f)
-        f.close()
-
+        with open(cfg_json_path) as f:
+            config_json = json.load(f)
         return config_json
 
     def modify_mul_line_file(self, file_path, pattern, replace_str):
-        f = open(file_path)
-        content = f.read()
-        f.close()
-
+        with open(file_path) as f:
+            content = f.read()
         new_content = re.sub(pattern, replace_str, content)
 
-        f = open(file_path, "w")
-        f.write(new_content)
-        f.close()
+        with open(file_path, "w") as f:
+            f.write(new_content)
     def modify_file(self, file_path, pattern, replace_str):
-            f = open(file_path)
+        with open(file_path) as f:
             lines = f.readlines()
-            f.close()
+        new_lines = []
+        for line in lines:
+            new_line = re.sub(pattern, replace_str, line)
+            new_lines.append(new_line)
 
-            new_lines = []
-            for line in lines:
-                new_line = re.sub(pattern, replace_str, line)
-                new_lines.append(new_line)
-
-            f = open(file_path, "w")
+        with open(file_path, "w") as f:
             f.writelines(new_lines)
-            f.close()
 
     def modify_files(self, configFile, operationFun):
         modify_cfg = self.config_json[configFile]
@@ -88,7 +80,7 @@ class ProjectFormat(object):
             file_path = os.path.join(self.file_base_path, file_path)
 
             if not os.path.isfile(file_path):
-                print("%s is not a file." % file_path)
+                print(f"{file_path} is not a file.")
                 continue
 
             pattern = cfg["pattern"]

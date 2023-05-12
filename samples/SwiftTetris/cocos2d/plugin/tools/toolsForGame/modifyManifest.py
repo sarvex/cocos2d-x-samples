@@ -12,24 +12,21 @@ def doModify(sourceFile, root):
     bRet = False
     sourceTree = ET.parse(sourceFile)
     sourceRoot = sourceTree.getroot()
-    
-    # get target content
-    f = open(manifestFile)
-    targetContent = f.read()
-    f.close()
-    
+
+    with open(manifestFile) as f:
+        targetContent = f.read()
     # check config for application
     appCfgNode = sourceRoot.find('applicationCfg')
     if appCfgNode is not None and len(appCfgNode) > 0:
         appKeyWord = appCfgNode.get('keyword')
-        
+
         if appKeyWord != None and len(appKeyWord) > 0:
             keyIndex = targetContent.find(appKeyWord)
-            if -1 == keyIndex:
+            if keyIndex == -1:
                 bRet = True
                 for node in list(appCfgNode):
                     root.find('application').append(node)
-    
+
     # check permission config
     perCfgNode = sourceRoot.find('permissionCfg')
     if perCfgNode is not None and len(perCfgNode) > 0:
@@ -38,10 +35,10 @@ def doModify(sourceFile, root):
             perAttr = oneNode.get(key)
             if perAttr != None and len(perAttr) > 0:
                 attrIndex = targetContent.find(perAttr)
-                if -1 == attrIndex:
+                if attrIndex == -1:
                     bRet = True
                     root.append(oneNode)
-    
+
     return bRet
 
 # parse file AndroidManifest.xml of game project

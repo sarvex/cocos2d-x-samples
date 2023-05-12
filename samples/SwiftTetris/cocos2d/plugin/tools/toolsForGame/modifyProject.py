@@ -23,13 +23,19 @@ def getLinkElement():
 tree = ET.parse(projFile)
 root = tree.getroot()
 nodeLinkRes = root.find('linkedResources')
-if nodeLinkRes != None:
+if nodeLinkRes is None:
+    linkResEle = ET.Element('linkedResources')
+    linkResEle.append(getLinkElement())
+    root.append(linkResEle)
+    tree.write(projFile, 'UTF-8')
+
+else:
     linkNodes = nodeLinkRes.findall('link')
     haveTarget = False
     if linkNodes != None and len(linkNodes) > 0:
         for node in linkNodes:
             locNode = node.find('locationURI')
-            if locNode == None:
+            if locNode is None:
                 continue
             tempText = locNode.text
             tempText = tempText.strip(' \n\r\t')
@@ -39,8 +45,3 @@ if nodeLinkRes != None:
     if not haveTarget:
         nodeLinkRes.append(getLinkElement())
         tree.write(projFile, 'UTF-8')
-else:
-    linkResEle = ET.Element('linkedResources')
-    linkResEle.append(getLinkElement())
-    root.append(linkResEle)
-    tree.write(projFile, 'UTF-8')

@@ -59,9 +59,8 @@ def _run_cmd(command):
         raise CmdError(message)
 
 def _edit_yaml(filePath):
-    f = open(filePath, 'r')
-    data = yaml.load(f)
-    f.close()
+    with open(filePath, 'r') as f:
+        data = yaml.load(f)
     data['conversions']['ns_map']['cocos2d::plugin::'] = 'plugin.'
     data['conversions']['to_native']['TIAPDeveloperInfo'] = 'ok &= pluginx::luaval_to_TIAPDeveloperInfo(tolua_S, ${arg_idx}, &${out_value})'
     data['conversions']['to_native']['TAdsDeveloperInfo'] = 'ok &= pluginx::luaval_to_TAdsDeveloperInfo(tolua_S, ${arg_idx}, &${out_value})'
@@ -69,9 +68,8 @@ def _edit_yaml(filePath):
     data['conversions']['to_native']['TShareDeveloperInfo'] = 'ok &= pluginx::luaval_to_TShareDeveloperInfo(tolua_S, ${arg_idx}, &${out_value})'
     data['conversions']['to_native']['TSocialDeveloperInfo'] = 'ok &= pluginx::luaval_to_TSocialDeveloperInfo(tolua_S, ${arg_idx}, &${out_value})'
     data['conversions']['to_native']['TUserDeveloperInfo'] = 'ok &= pluginx::luaval_to_TUserDeveloperInfo(tolua_S, ${arg_idx}, &${out_value})'
-    f = open(filePath, 'w')
-    f.write(yaml.dump(data))
-    f.close()
+    with open(filePath, 'w') as f:
+        f.write(yaml.dump(data))
 
 def main():
 

@@ -15,8 +15,7 @@ def getLibElement(pathAttr):
 
 def fomatTree(elem):
     root_str = ET.tostring(elem, 'UTF-8')
-    reparse = minidom.parseString(root_str)
-    return reparse
+    return minidom.parseString(root_str)
 
 tree = ET.parse(classPathFile)
 root = tree.getroot()
@@ -33,8 +32,8 @@ for node in entryNodes:
 plugins = pluginStr.split(':')
 modified = False
 for pluginName in plugins:
-    pluginAndroidDir = pluginsDir + '/' + pluginName + '/android'
-    
+    pluginAndroidDir = f'{pluginsDir}/{pluginName}/android'
+
     for fileName in os.listdir(pluginAndroidDir):
         if os.path.splitext(fileName)[1] == '.jar':
             needAdd = True
@@ -43,15 +42,14 @@ for pluginName in plugins:
                 if fileName == jarName:
                     needAdd = False
                     break
-            
+
             if needAdd:
                 modified = True
-                pathAttr = 'plugin-x/' + pluginName + '/android/' + fileName
+                pathAttr = f'plugin-x/{pluginName}/android/{fileName}'
                 root.append(getLibElement(pathAttr))
                 linkedLibs.append(pathAttr)
 
 if modified:
-    f = open(classPathFile, 'w')
-    fomatDom = fomatTree(root)
-    fomatDom.writexml(f, '', '\t', '\n', 'UTF-8')
-    f.close()
+    with open(classPathFile, 'w') as f:
+        fomatDom = fomatTree(root)
+        fomatDom.writexml(f, '', '\t', '\n', 'UTF-8')

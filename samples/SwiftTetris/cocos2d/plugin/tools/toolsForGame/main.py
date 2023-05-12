@@ -17,16 +17,11 @@ stepList = []
 def showStep(num):
     global stepList
     stepNum = len(stepList)
-    if num >= stepNum or num <= 0 :
-        pass
-    
-    i = 0
-    while i < stepNum:
+    for i in range(stepNum):
         if i == num:
             stepList[i].stepFrame.pack(fill=BOTH, anchor='nw')
         else:
             stepList[i].stepFrame.pack_forget()
-        i += 1
 
 # update the pre & next buttons status
 def updateBtnState():
@@ -51,7 +46,7 @@ def nextStep():
     if btnNextStep['text'] == 'close':
         root.quit()
         return
-    
+
     global curStep
     nowStepObj = stepList[curStep - 1]
     bRet = nowStepObj.checkStep()
@@ -60,7 +55,7 @@ def nextStep():
         return
     else:
         stepError['text'] = ''
-    
+
     if curStep < maxStep:
         curStep += 1
         showStep(curStep - 1)
@@ -69,22 +64,21 @@ def nextStep():
         # disable buttons when process
         btnPreStep['state'] = DISABLED
         btnNextStep['state'] = DISABLED
-        
+
         # get user input arguments
         projPath = stepList[0].getPath()
         plugins = stepList[1].getSelectedPlugins()
         strPlugins = ''
-        i = 0
-        while i < len(plugins):
+        for i in range(len(plugins)):
             strPlugins += "plugins/"
             strPlugins += plugins[i]
             if i != (len(plugins) - 1):
                 strPlugins += ':'
-            i += 1
-        
         # process shell script to modify the game project
-        ret = os.system('bash ./toolsForGame/addPluginForGame.sh ' + projPath + ' ' + strPlugins)
-        
+        ret = os.system(
+            f'bash ./toolsForGame/addPluginForGame.sh {projPath} {strPlugins}'
+        )
+
         if ret != 0:
             # enable buttons after process
             btnPreStep['state'] = NORMAL

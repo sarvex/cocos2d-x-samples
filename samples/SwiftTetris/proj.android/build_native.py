@@ -70,28 +70,30 @@ def select_toolchain_version():
 
 def do_build(cocos_root, ndk_root, app_android_root,ndk_build_param,sdk_root,android_platform,build_mode):
 
-    ndk_path = os.path.join(ndk_root, "ndk-build")
+	ndk_path = os.path.join(ndk_root, "ndk-build")
 
-    num_of_cpu = get_num_of_cpu()
-	
-    if ndk_build_param == None:
-        command = '%s -j%d -C %s NDK_DEBUG=%d' % (ndk_path, num_of_cpu, app_android_root, build_mode=='debug')
-    else:
-        command = '%s -j%d -C %s NDK_DEBUG=%d %s' % (ndk_path, num_of_cpu, app_android_root, build_mode=='debug', ' '.join(str(e) for e in ndk_build_param))
-    if os.system(command) != 0:
-        raise Exception("Build dynamic library for project [ " + app_android_root + " ] fails!")
-    elif android_platform is not None:
-    	  sdk_tool_path = os.path.join(sdk_root, "tools/android")
-    	  cocoslib_path = os.path.join(cocos_root, "cocos/platform/android/java")
-    	  command = '%s update lib-project -t %s -p %s' % (sdk_tool_path,android_platform,cocoslib_path) 
-    	  if os.system(command) != 0:
-    	  	  raise Exception("update cocos lib-project [ " + cocoslib_path + " ] fails!")  	  
-    	  command = '%s update project -t %s -p %s -s' % (sdk_tool_path,android_platform,app_android_root)
-    	  if os.system(command) != 0:
-    	  	  raise Exception("update project [ " + app_android_root + " ] fails!")    	  	  
-    	  buildfile_path = os.path.join(app_android_root, "build.xml")
-    	  command = 'ant clean %s -f %s -Dsdk.dir=%s' % (build_mode,buildfile_path,sdk_root)
-    	  os.system(command)
+	num_of_cpu = get_num_of_cpu()
+
+	if ndk_build_param is None:
+		command = '%s -j%d -C %s NDK_DEBUG=%d' % (ndk_path, num_of_cpu, app_android_root, build_mode=='debug')
+	else:
+		command = '%s -j%d -C %s NDK_DEBUG=%d %s' % (ndk_path, num_of_cpu, app_android_root, build_mode=='debug', ' '.join(str(e) for e in ndk_build_param))
+	if os.system(command) != 0:
+		raise Exception(
+			f"Build dynamic library for project [ {app_android_root} ] fails!"
+		)
+	elif android_platform is not None:
+		sdk_tool_path = os.path.join(sdk_root, "tools/android")
+		cocoslib_path = os.path.join(cocos_root, "cocos/platform/android/java")
+		command = f'{sdk_tool_path} update lib-project -t {android_platform} -p {cocoslib_path}'
+		if os.system(command) != 0:
+			raise Exception(f"update cocos lib-project [ {cocoslib_path} ] fails!")
+		command = f'{sdk_tool_path} update project -t {android_platform} -p {app_android_root} -s'
+		if os.system(command) != 0:
+			raise Exception(f"update project [ {app_android_root} ] fails!")
+		buildfile_path = os.path.join(app_android_root, "build.xml")
+		command = f'ant clean {build_mode} -f {buildfile_path} -Dsdk.dir={sdk_root}'
+		os.system(command)
 
 def copy_files(src, dst):
 

@@ -44,35 +44,33 @@ def select_toolchain_version(ndk_root):
 
     version_file_path = os.path.join(ndk_root, "RELEASE.TXT")
     try:
-        versionFile = open(version_file_path)
-        lines = versionFile.readlines()
-        versionFile.close()
-
+        with open(version_file_path) as versionFile:
+            lines = versionFile.readlines()
         version_num = None
         version_char = None
         pattern = r'^[a-zA-Z]+(\d+)(\w)'
         for line in lines:
             str_line = line.lstrip()
-            match = re.match(pattern, str_line)
-            if match:
+            if match := re.match(pattern, str_line):
                 version_num = int(match.group(1))
                 version_char = match.group(2)
                 break
 
         if version_num is None:
-            print("Parse NDK version from file %s failed." % version_file_path)
+            print(f"Parse NDK version from file {version_file_path} failed.")
         else:
             version_char = version_char.lower()
             if version_num > 10 or (version_num == 10 and cmp(version_char, 'c') >= 0):
                 ret_version = "4.9"
 
     except:
-        print("Parse NDK version from file %s failed." % version_file_path)
+        print(f"Parse NDK version from file {version_file_path} failed.")
 
-    print("NDK_TOOLCHAIN_VERSION: %s" % ret_version)
+    print(f"NDK_TOOLCHAIN_VERSION: {ret_version}")
     if ret_version == "4.8":
         print(
-            "Your application may crash when using c++ 11 regular expression with NDK_TOOLCHAIN_VERSION %s" % ret_version)
+            f"Your application may crash when using c++ 11 regular expression with NDK_TOOLCHAIN_VERSION {ret_version}"
+        )
 
     return ret_version
 
@@ -119,9 +117,9 @@ def copy_resources(app_android_root):
     # copy resources
     os.mkdir(assets_dir)
 
-    assets_res_dir = assets_dir + "/res";
-    assets_scripts_dir = assets_dir + "/src";
-    assets_jsb_dir = assets_dir + "/script";
+    assets_res_dir = f"{assets_dir}/res";
+    assets_scripts_dir = f"{assets_dir}/src";
+    assets_jsb_dir = f"{assets_dir}/script";
     os.mkdir(assets_res_dir);
     os.mkdir(assets_scripts_dir);
     os.mkdir(assets_jsb_dir);

@@ -25,13 +25,17 @@ class step1(step):
         return
     
     def checkStep(self):
-        tipStr = None
         projPath = self.step_entry.get()
         haveDir = os.path.exists(projPath)
-        isPorj = os.path.exists(projPath + '/AndroidManifest.xml')
-        if projPath == None or len(projPath) == 0 or haveDir == False or isPorj == False:
-            tipStr = 'The project path is wrong'
-        return tipStr
+        isPorj = os.path.exists(f'{projPath}/AndroidManifest.xml')
+        return (
+            'The project path is wrong'
+            if projPath is None
+            or len(projPath) == 0
+            or haveDir == False
+            or isPorj == False
+            else None
+        )
     
     def getPath(self):
         return self.step_entry.get()
@@ -55,16 +59,13 @@ class step2(step):
         return
     
     def checkStep(self):
-        tipStr = None
         num = 0
         for var in self.checkValues:
             if len(var.get()) != 0:
                 num += 1
                 break
-        
-        if num == 0:
-            tipStr = 'At least select one plugin'
-        return tipStr
+
+        return 'At least select one plugin' if num == 0 else None
     
     def getSelectedPlugins(self):
         selectPlugins = []
